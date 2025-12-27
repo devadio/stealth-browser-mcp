@@ -2709,6 +2709,10 @@ if __name__ == "__main__":
     if DISABLED_SECTIONS:
         print(f"Disabled tool sections: {', '.join(sorted(DISABLED_SECTIONS))}")
     
+    # Disable debug console output for STDIO transport to prevent JSON parsing errors
+    if args.transport == "stdio":
+        debug_logger.disable()
+    
     if args.transport == "http":
         mcp.run(transport="http", host=args.host, port=args.port)
     else:

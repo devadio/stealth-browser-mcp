@@ -97,7 +97,7 @@ class BrowserManager:
                 width=options.viewport_width,
                 height=options.viewport_height
             )
-            print(f"[DEBUG] Set viewport to {options.viewport_width}x{options.viewport_height}")
+            debug_logger.log_info("browser_manager", "spawn_browser", f"Set viewport to {options.viewport_width}x{options.viewport_height}")
 
             await self._setup_dynamic_hooks(tab, instance_id)
 
