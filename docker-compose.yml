@@ -58,7 +58,7 @@ services:
     container_name: stealth-proxy
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       - PORT=3000
       - STEALTH_URL=http://stealth-mcp:8000/mcp/tools/call
