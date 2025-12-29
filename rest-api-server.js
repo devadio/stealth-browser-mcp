@@ -12,7 +12,13 @@ let sessionId = null;
 function initializeMCP() {
     console.log('Connecting to MCP server...');
 
-    const eventSource = new EventSource(MCP_SSE_URL);
+    const eventSource = new EventSource(MCP_SSE_URL, {
+        headers: {
+            'Accept': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+        }
+    });
 
     eventSource.onopen = () => {
         console.log('✅ Connected to MCP server');
@@ -21,7 +27,7 @@ function initializeMCP() {
     eventSource.onmessage = (event) => {
         try {
             const data = JSON.parse(event.data);
-            console.log('MCP Message:', data);
+            console.log('MCP Message:', JSON.stringify(data).substring(0, 200));
 
             // Extract session ID from initialization
             if (data.method === 'initialize' || data.result) {
@@ -29,12 +35,15 @@ function initializeMCP() {
                 console.log('Session ID:', sessionId);
             }
         } catch (e) {
-            console.error('Parse error:', e);
+            console.error('Parse error:', e.message);
         }
     };
 
     eventSource.onerror = (error) => {
         console.error('❌ MCP connection error:', error);
+        if (mcpSession) {
+            mcpSession.close();
+        }
         setTimeout(initializeMCP, 5000); // Reconnect after 5s
     };
 
@@ -59,7 +68,8 @@ app.post('/api/scrape', async (req, res) => {
             success: true,
             message: 'MCP session established, tool calling not yet implemented',
             sessionId: sessionId,
-            url: url
+            url: url,
+            connected: mcpSession !== null && mcpSession.readyState === EventSource.OPEN
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -70,7 +80,7 @@ app.post('/api/scrape', async (req, res) => {
 app.get('/health', (req, res) => {
     res.json({
         status: 'ok',
-        mcpConnected: mcpSession !== null,
+        mcpConnected: mcpSession !== null && mcpSession.readyState === EventSource.OPEN,
         sessionId: sessionId
     });
 });
