@@ -47,8 +47,8 @@ services:
 
     # --- NETWORKING ---
     # Ensure this network can communicate with your n8n container if applicable.
-    # networks:
-    #   - dokploy-network 
+    networks:
+      - stealth-network
 
   stealth-proxy:
     build:
@@ -62,3 +62,9 @@ services:
     environment:
       - PORT=3000
       - STEALTH_URL=http://stealth-mcp:8000/mcp/tools/call
+    networks:
+      - stealth-network
+
+networks:
+  stealth-network:
+    driver: bridge
