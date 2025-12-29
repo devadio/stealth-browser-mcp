@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  stealth-mcp:
+    build: .
+    image: stealth-mcp:latest
+    container_name: stealth-mcp
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      # Optional: Placeholder for future Auth implementation (not active by default)
+      # - MCP_ACCESS_TOKEN=${MCP_ACCESS_TOKEN}
+
+      # --- CONFIGURATION SECTION ---
+
+      # OPTION 1: MINIMAL (Best for Scraping - Default)
+      # Uses only core browser + element interaction tools.
+      # Low memory usage (~500MB - 1GB depending on site).
+    command: [ "python", "src/server.py", "--transport", "http", "--host", "0.0.0.0", "--minimal" ]
+    # OPTION 2: LOGIN SUPPORT (Minimal + Cookies)
+    # Use this if you need to save login sessions.
+    # Note: We cannot use --minimal here because it forces cookies off. We must manually disable others.
+    # command: [
+    #   "python", "src/server.py", 
+    #   "--transport", "http", 
+    #   "--host", "0.0.0.0",
+    #   "--disable-dynamic-hooks",
+    #   "--disable-progressive-cloning",
+    #   "--disable-cdp-functions",
+    #   "--disable-network-debugging",
+    #   "--disable-file-extraction",
+    #   "--disable-element-extraction",
+    #   "--disable-debugging",
+    #   "--disable-tabs"
+    # ]
+
+    # OPTION 3: FULL MODE (Development/Debugging)
+    # Enables all 90+ tools including network interception and detailed debugging.
+    # command: ["python", "src/server.py", "--transport", "http", "--host", "0.0.0.0"]
+
+    # --- VOLUMES ---
+    # Uncomment if you need to persist login sessions (cookies) or downloaded files.
+    # volumes:
+    #   - ./user_data:/app/user_data
+    #   - ./downloads:/app/downloads
+
+    # --- NETWORKING ---
+    # Ensure this network can communicate with your n8n container if applicable.
+    # networks:
+    #   - dokploy-network 
