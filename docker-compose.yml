@@ -49,3 +49,16 @@ services:
     # Ensure this network can communicate with your n8n container if applicable.
     # networks:
     #   - dokploy-network 
+
+  stealth-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.proxy
+    image: stealth-proxy:latest
+    container_name: stealth-proxy
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - STEALTH_URL=http://stealth-mcp:8000/mcp/tools/call
