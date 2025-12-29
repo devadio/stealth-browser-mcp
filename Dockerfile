@@ -1,4 +1,4 @@
-# Use Python 3.11 slim image for smaller size
+# Use Python 3.11 slim image for smaller size 1
 FROM python:3.11-slim
 
 # Install system dependencies for Chrome, browser automation, and git (needed for py2js)
